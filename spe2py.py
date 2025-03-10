@@ -41,7 +41,10 @@ def raman_shift(scattered_wavelengths, laser_wavelength=532):
     raman_shifts = laser_wavelength_cm - scattered_wavelengths_cm
     return raman_shifts
 
-def spectra_to_txt(loaded_files, filepaths):
+def spectra_to_txt(loaded_files, filenames):
+    """
+    enter the tuple output of spe2py.load()
+    ""
     root = tk.Tk()
     root.withdraw()
     folder_path = filedialog.askdirectory(title="Select Folder to Save Files")
