@@ -55,9 +55,7 @@ class SpeFile:
             self.xdim, self.ydim = self._get_dims()
             self.roi, self.nroi = self._get_roi_info()
             self.wavelength = self._get_wavelength()
-            self.ramanshift = 1/
             self.xcoord, self.ycoord = self._get_coords()
-
             self.data, self.metadata, self.metanames = self._read_data(file)
         file.close()
 
@@ -250,16 +248,26 @@ class SpeFile:
         raman_shifts = laser_wavelength_cm - scattered_wavelengths_cm
     return raman_shifts
 
-    def spectra_to_txt(loaded_files, filename):
-    with open(filename, 'w') as file:
-        # Write header
-        file.write("Raman Shift (cm⁻¹)\tData\n")
-        
-        # Iterate through the list of objects and save data
-        for obj in loaded_files:
-            raman_shifts = calculate_raman_shift(obj.laser_wavelength, obj.wavelength)
-            for raman_shift, data_point in zip(raman_shifts, obj.data[0][0]):
-                file.write(f"{raman_shift}\t{data_point}\n")
+    def spectra_to_txt(loaded_files, filepaths):
+        root = tk.Tk()
+        root.withdraw()
+        folder_path = filedialog.askdirectory(title="Select Folder to Save Files")
+        """
+        saves the files as .txt file,
+        second input is the filenames output of load() method
+        """
+        if folder_path:
+            for obj, filepath in zip(loaded_files, filepaths):
+                filename = os.path.splitext(os.path.basename(filepath))[0]
+                txt_filename = os.path.join(folder_path, filename + '.txt')
+    
+                # Vectorized computation of Raman shifts and data points
+                raman_shifts = calculate_raman_shift(obj.laser_wavelength, obj.wavelength)
+                data_points = obj.data[0][0]
+    
+                # Save data to .txt file
+                np.savetxt(txt_filename, np.column_stack((raman_shifts, data_points)), 
+                           header="Raman Shift (cm⁻¹)\tIntensity", comments='', delimiter='\t')
 
     def specplot(self, frame=0, roi=0):
         """
