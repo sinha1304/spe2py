@@ -19,7 +19,7 @@ def get_files(mult=False):
     Uses tkinter to allow UI source file selection
     Adapted from: http://stackoverflow.com/a/7090747
     """
-    root = tk.Tk()
+    root = tk.Tk()Fload
     root.withdraw()
     root.overrideredirect(True)
     root.geometry('0x0+0+0')
@@ -302,15 +302,14 @@ def load(filepaths=None):
         filepaths = get_files(mult=True)
     elif isinstance(filepaths, str):
         filepaths = [filepaths]
-    batch = [[] for _ in range(0, len(filepaths))]
-    for file in range(0, len(filepaths)):
-        batch[file] = SpeFile(filepaths[file])
-    return_type = "list of SpeFile objects"
-    if len(batch) == 1:
-        batch = batch[0]
-        return_type = "SpeFile object"
-    print('Successfully loaded %i file(s) in a %s' % (len(filepaths), return_type))
-    return batch
+
+    batch = []
+    filenames = []  # List to store filenames without extension
+    for filepath in filepaths:
+        batch.append(SpeFile(filepath))
+        filenames.append(os.path.splitext(os.path.basename(filepath))[0])  # Store filename without extension
+
+    return batch, filenames
 
 
 def read_at(file, pos, size, ntype):
