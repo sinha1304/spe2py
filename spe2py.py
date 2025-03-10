@@ -32,7 +32,35 @@ def get_files(mult=False):
     root.destroy()
     return filepaths
 
+def raman_shift(scattered_wavelengths, laser_wavelength=532):
+    """
+    Calculate the Raman shift in cm⁻¹ given the laser wavelength and an array of scattered wavelengths.
+    """
+    laser_wavelength_cm = 1e7 / laser_wavelength  # Convert laser wavelength to cm⁻¹
+    scattered_wavelengths_cm = 1e7 / np.array(scattered_wavelengths)  # Convert scattered wavelengths to cm⁻¹
+    raman_shifts = laser_wavelength_cm - scattered_wavelengths_cm
+    return raman_shifts
 
+def spectra_to_txt(loaded_files, filepaths):
+    root = tk.Tk()
+    root.withdraw()
+    folder_path = filedialog.askdirectory(title="Select Folder to Save Files")
+    """
+    saves the files as .txt file,
+    second input is the filenames output of load() method
+    """
+    if folder_path:
+        for obj, filepath in zip(loaded_files, filepaths):
+            filename = os.path.splitext(os.path.basename(filepath))[0]
+            txt_filename = os.path.join(folder_path, filename + '.txt')
+
+            # Vectorized computation of Raman shifts and data points
+            raman_shifts = calculate_raman_shift(obj.laser_wavelength, obj.wavelength)
+            data_points = obj.data[0][0]
+
+            # Save data to .txt file
+            np.savetxt(txt_filename, np.column_stack((raman_shifts, data_points)), 
+                       header="Raman Shift (cm⁻¹)\tIntensity", comments='', delimiter='\t')
 class SpeFile:
     def __init__(self, filepath=None):
         if filepath is not None:
@@ -239,36 +267,7 @@ class SpeFile:
         img = plt.imshow(self.data[frame][roi], cmap=cm.get_cmap('hot'))
         plt.title(self.filepath)
         return img
-    def raman_shift(scattered_wavelengths, laser_wavelength=532):
-        """
-        Calculate the Raman shift in cm⁻¹ given the laser wavelength and an array of scattered wavelengths.
-        """
-        laser_wavelength_cm = 1e7 / laser_wavelength  # Convert laser wavelength to cm⁻¹
-        scattered_wavelengths_cm = 1e7 / np.array(scattered_wavelengths)  # Convert scattered wavelengths to cm⁻¹
-        raman_shifts = laser_wavelength_cm - scattered_wavelengths_cm
-        return raman_shifts
-
-    def spectra_to_txt(loaded_files, filepaths):
-        root = tk.Tk()
-        root.withdraw()
-        folder_path = filedialog.askdirectory(title="Select Folder to Save Files")
-        """
-        saves the files as .txt file,
-        second input is the filenames output of load() method
-        """
-        if folder_path:
-            for obj, filepath in zip(loaded_files, filepaths):
-                filename = os.path.splitext(os.path.basename(filepath))[0]
-                txt_filename = os.path.join(folder_path, filename + '.txt')
-    
-                # Vectorized computation of Raman shifts and data points
-                raman_shifts = calculate_raman_shift(obj.laser_wavelength, obj.wavelength)
-                data_points = obj.data[0][0]
-    
-                # Save data to .txt file
-                np.savetxt(txt_filename, np.column_stack((raman_shifts, data_points)), 
-                           header="Raman Shift (cm⁻¹)\tIntensity", comments='', delimiter='\t')
-
+        
     def specplot(self, frame=0, roi=0):
         """
         Plots loaded data for a specific frame, assuming the data is a one dimensional spectrum.
