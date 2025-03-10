@@ -55,7 +55,7 @@ def spectra_to_txt(loaded_files, filenames,laser_wavelength):
             txt_filename = os.path.join(folder_path, filename + '.txt')
             # Vectorized computation of Raman shifts and data points
             raman_shifts = raman_shift(obj.wavelength,laser_wavelength=laser_wavelength)
-            data_points = obj.data[0][0]
+            data_points = obj.data[0][0][50,:]
 
             # Save data to .txt file
             np.savetxt(txt_filename, np.column_stack((raman_shifts, data_points)), 
