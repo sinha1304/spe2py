@@ -12,25 +12,21 @@ from io import StringIO
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import os
-
+from PyQt5.QtWidgets import QApplication, QFileDialog
 
 def get_files(mult=False):
     """
-    Uses tkinter to allow UI source file selection
-    Adapted from: http://stackoverflow.com/a/7090747
+    Uses PyQt5 to allow UI source file selection
     """
-    root = tk.Tk()
-    root.withdraw()
-    root.overrideredirect(True)
-    root.geometry('0x0+0+0')
-    root.deiconify()
-    root.lift()
-    root.focus_force()
-    filepaths = fdialog.askopenfilenames()
-    if not mult:
-        filepaths = filepaths[0]
-    root.destroy()
+    app = QApplication([])  # Initialize QApplication instance
+    root = QFileDialog()  # Use QFileDialog from PyQt5
+    if mult:
+        filepaths, _ = root.getOpenFileNames(None, "Select Files", "", "All Files (*)")  # Multi-file dialog
+    else:
+        filepaths, _ = root.getOpenFileName(None, "Select File", "", "All Files (*)")  # Single file dialog
+    app.quit()  # Close the application after the file selection is done
     return filepaths
+
 
 def raman_shift(scattered_wavelengths, laser_wavelength=532):
     """
@@ -47,9 +43,11 @@ def spectra_to_txt(loaded_files, filenames,laser_wavelength):
     saves the files as .txt file,
     second input is the filenames output of load() method
     """
-    root = tk.Tk()
-    root.withdraw()
-    folder_path = fdialog.askdirectory(title="Select Folder to Save Files")
+    #root = tk.Tk()
+    #root.withdraw()
+    app = QApplication([])
+    folder_path = QFileDialog.getExistingDirectory(None, "Select Folder to Save Files")
+    #folder_path = fdialog.askdirectory(title="Select Folder to Save Files")
     if folder_path:
         for obj, filename in zip(loaded_files, filenames):
             txt_filename = os.path.join(folder_path, filename + '.txt')
@@ -60,6 +58,7 @@ def spectra_to_txt(loaded_files, filenames,laser_wavelength):
             # Save data to .txt file
             np.savetxt(txt_filename, np.column_stack((raman_shifts, data_points)), 
                        header="Raman Shift (cm⁻¹)\tIntensity", comments='', delimiter='\t')
+    app.quit()  # Close the application after the file selection is done
 class SpeFile:
     def __init__(self, filepath=None):
         if filepath is not None:
