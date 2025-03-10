@@ -19,7 +19,7 @@ def get_files(mult=False):
     Uses tkinter to allow UI source file selection
     Adapted from: http://stackoverflow.com/a/7090747
     """
-    root = tk.Tk()Fload
+    root = tk.Tk()
     root.withdraw()
     root.overrideredirect(True)
     root.geometry('0x0+0+0')
