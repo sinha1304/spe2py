@@ -11,6 +11,7 @@ from io import StringIO
 #matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 from matplotlib import cm
+import os
 
 
 def get_files(mult=False):
@@ -54,7 +55,7 @@ class SpeFile:
             self.xdim, self.ydim = self._get_dims()
             self.roi, self.nroi = self._get_roi_info()
             self.wavelength = self._get_wavelength()
-
+            self.ramanshift = 1/
             self.xcoord, self.ycoord = self._get_coords()
 
             self.data, self.metadata, self.metanames = self._read_data(file)
@@ -240,6 +241,25 @@ class SpeFile:
         img = plt.imshow(self.data[frame][roi], cmap=cm.get_cmap('hot'))
         plt.title(self.filepath)
         return img
+    def raman_shift(laser_wavelength=532, scattered_wavelengths):
+        """
+        Calculate the Raman shift in cm⁻¹ given the laser wavelength and an array of scattered wavelengths.
+        """
+        laser_wavelength_cm = 1e7 / laser_wavelength  # Convert laser wavelength to cm⁻¹
+        scattered_wavelengths_cm = 1e7 / np.array(scattered_wavelengths)  # Convert scattered wavelengths to cm⁻¹
+        raman_shifts = laser_wavelength_cm - scattered_wavelengths_cm
+    return raman_shifts
+
+    def spectra_to_txt(loaded_files, filename):
+    with open(filename, 'w') as file:
+        # Write header
+        file.write("Raman Shift (cm⁻¹)\tData\n")
+        
+        # Iterate through the list of objects and save data
+        for obj in loaded_files:
+            raman_shifts = calculate_raman_shift(obj.laser_wavelength, obj.wavelength)
+            for raman_shift, data_point in zip(raman_shifts, obj.data[0][0]):
+                file.write(f"{raman_shift}\t{data_point}\n")
 
     def specplot(self, frame=0, roi=0):
         """
@@ -264,6 +284,7 @@ class SpeFile:
                     self.xmltree(getattr(footer, item), ind)
 
 
+
 def load(filepaths=None):
     """
     Allows user to load multiple files at once. Each file is stored as an SpeFile object in the list batch.
@@ -272,16 +293,14 @@ def load(filepaths=None):
         filepaths = get_files(mult=True)
     elif isinstance(filepaths, str):
         filepaths = [filepaths]
-    batch = [[] for _ in range(0, len(filepaths))]
-    for file in range(0, len(filepaths)):
-        batch[file] = SpeFile(filepaths[file])
-    return_type = "list of SpeFile objects"
-    if len(batch) == 1:
-        batch = batch[0]
-        return_type = "SpeFile object"
-    print('Successfully loaded %i file(s) in a %s' % (len(filepaths), return_type))
-    return batch
 
+    batch = []
+    filenames = []  # List to store filenames without extension
+    for filepath in filepaths:
+        batch.append(SpeFile(filepath))
+        filenames.append(os.path.splitext(os.path.basename(filepath))[0])  # Store filename without extension
+
+    return batch, filenames
 
 def read_at(file, pos, size, ntype):
     """
