@@ -44,14 +44,12 @@ def raman_shift(scattered_wavelengths, laser_wavelength=532):
 def spectra_to_txt(loaded_files, filenames):
     """
     enter the tuple output of spe2py.load()
-    ""
-    root = tk.Tk()
-    root.withdraw()
-    folder_path = fdialog.askdirectory(title="Select Folder to Save Files")
-    """
     saves the files as .txt file,
     second input is the filenames output of load() method
     """
+    root = tk.Tk()
+    root.withdraw()
+    folder_path = fdialog.askdirectory(title="Select Folder to Save Files")
     if folder_path:
         for obj, filepath in zip(loaded_files, filepaths):
             filename = os.path.splitext(os.path.basename(filepath))[0]
@@ -86,7 +84,9 @@ class SpeFile:
             self.xdim, self.ydim = self._get_dims()
             self.roi, self.nroi = self._get_roi_info()
             self.wavelength = self._get_wavelength()
+
             self.xcoord, self.ycoord = self._get_coords()
+
             self.data, self.metadata, self.metanames = self._read_data(file)
         file.close()
 
@@ -270,7 +270,7 @@ class SpeFile:
         img = plt.imshow(self.data[frame][roi], cmap=cm.get_cmap('hot'))
         plt.title(self.filepath)
         return img
-        
+
     def specplot(self, frame=0, roi=0):
         """
         Plots loaded data for a specific frame, assuming the data is a one dimensional spectrum.
@@ -294,7 +294,6 @@ class SpeFile:
                     self.xmltree(getattr(footer, item), ind)
 
 
-
 def load(filepaths=None):
     """
     Allows user to load multiple files at once. Each file is stored as an SpeFile object in the list batch.
@@ -303,14 +302,16 @@ def load(filepaths=None):
         filepaths = get_files(mult=True)
     elif isinstance(filepaths, str):
         filepaths = [filepaths]
+    batch = [[] for _ in range(0, len(filepaths))]
+    for file in range(0, len(filepaths)):
+        batch[file] = SpeFile(filepaths[file])
+    return_type = "list of SpeFile objects"
+    if len(batch) == 1:
+        batch = batch[0]
+        return_type = "SpeFile object"
+    print('Successfully loaded %i file(s) in a %s' % (len(filepaths), return_type))
+    return batch
 
-    batch = []
-    filenames = []  # List to store filenames without extension
-    for filepath in filepaths:
-        batch.append(SpeFile(filepath))
-        filenames.append(os.path.splitext(os.path.basename(filepath))[0])  # Store filename without extension
-
-    return batch, filenames
 
 def read_at(file, pos, size, ntype):
     """
