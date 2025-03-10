@@ -41,7 +41,7 @@ def raman_shift(scattered_wavelengths, laser_wavelength=532):
     raman_shifts = laser_wavelength_cm - scattered_wavelengths_cm
     return raman_shifts
 
-def spectra_to_txt(loaded_files, filenames):
+def spectra_to_txt(loaded_files, filepaths):
     """
     enter the tuple output of spe2py.load()
     saves the files as .txt file,
