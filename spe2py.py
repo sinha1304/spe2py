@@ -239,7 +239,7 @@ class SpeFile:
         img = plt.imshow(self.data[frame][roi], cmap=cm.get_cmap('hot'))
         plt.title(self.filepath)
         return img
-    def raman_shift(laser_wavelength=532, scattered_wavelengths):
+    def raman_shift(scattered_wavelengths, laser_wavelength=532):
         """
         Calculate the Raman shift in cm⁻¹ given the laser wavelength and an array of scattered wavelengths.
         """
