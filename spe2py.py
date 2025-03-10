@@ -47,7 +47,7 @@ def spectra_to_txt(loaded_files, filenames):
     ""
     root = tk.Tk()
     root.withdraw()
-    folder_path = filedialog.askdirectory(title="Select Folder to Save Files")
+    folder_path = fdialog.askdirectory(title="Select Folder to Save Files")
     """
     saves the files as .txt file,
     second input is the filenames output of load() method
