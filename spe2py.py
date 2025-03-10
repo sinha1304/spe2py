@@ -246,7 +246,7 @@ class SpeFile:
         laser_wavelength_cm = 1e7 / laser_wavelength  # Convert laser wavelength to cm⁻¹
         scattered_wavelengths_cm = 1e7 / np.array(scattered_wavelengths)  # Convert scattered wavelengths to cm⁻¹
         raman_shifts = laser_wavelength_cm - scattered_wavelengths_cm
-    return raman_shifts
+        return raman_shifts
 
     def spectra_to_txt(loaded_files, filepaths):
         root = tk.Tk()
