@@ -41,7 +41,7 @@ def raman_shift(scattered_wavelengths, laser_wavelength=532):
     raman_shifts = laser_wavelength_cm - scattered_wavelengths_cm
     return raman_shifts
 
-def spectra_to_txt(loaded_files, filepaths):
+def spectra_to_txt(loaded_files, filenames):
     """
     enter the tuple output of spe2py.load()
     saves the files as .txt file,
@@ -51,12 +51,10 @@ def spectra_to_txt(loaded_files, filepaths):
     root.withdraw()
     folder_path = fdialog.askdirectory(title="Select Folder to Save Files")
     if folder_path:
-        for obj, filepath in zip(loaded_files, filepaths):
-            filename = os.path.splitext(os.path.basename(filepath))[0]
+        for obj, filename in zip(loaded_files, filenames):
             txt_filename = os.path.join(folder_path, filename + '.txt')
-
             # Vectorized computation of Raman shifts and data points
-            raman_shifts = calculate_raman_shift(obj.laser_wavelength, obj.wavelength)
+            raman_shifts = raman_shift(obj.laser_wavelength, obj.wavelength)
             data_points = obj.data[0][0]
 
             # Save data to .txt file
