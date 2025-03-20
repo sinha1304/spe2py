@@ -57,7 +57,8 @@ def spectra_to_txt(loaded_files, filenames,laser_wavelength):
             data_points = np.mean(d, axis = 0)
             # Save data to .txt file
             np.savetxt(txt_filename, np.column_stack((raman_shifts, data_points)), 
-                       header="Raman Shift (cm⁻¹)\tIntensity", comments='', delimiter='\t')
+           header="Raman Shift (cm^-1)\tIntensity", comments='', delimiter='\t', encoding='utf-8')
+
     app.quit()  # Close the application after the file selection is done
 class SpeFile:
     def __init__(self, filepath=None):
